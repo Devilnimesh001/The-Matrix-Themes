@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You</title>
+     
+    <style>
+        *
+        {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body
+        {
+            overflow: hidden;
+            background: black;
+        }
+
+        canvas 
+        {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .container1
+        {
+            width: 50%;
+            height: 300px;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+            top: 20%;
+            left: 25%;
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+        .container2
+        {
+            width: 50%;
+            height: 300px;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+            top: 30%;
+            left: 25%;
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+        .container
+        {
+            display: inline-flex;
+            position: absolute;
+        }
+
+        .text
+        {
+            font-size: 3em;
+            color: rgb(49, 236, 49);
+            letter-spacing: 10px;
+            font-family: monospace;
+            border-right: 5px solid;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 3s steps(30), cursor .4s step-end infinite alternate-reverse;
+        }
+        .text1
+        {
+            font-size: 3em;
+            color: rgb(49, 236, 49);
+            letter-spacing: 10px;
+            font-family: monospace;
+            border-right: 5px solid;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing1 2s steps(21), cursor1 .4s step-end infinite alternate;
+        }
+        @keyframes cursor {
+            50% {
+                border-color: rgb(49, 236, 49);
+            }
+        }
+
+        @keyframes typing
+        {
+            from
+            {
+                width: 0;
+            }
+
+        }
+
+        @keyframes cursor1 {
+            50% {
+                border-color: transparent;
+            }
+        }
+
+        @keyframes typing1
+        {
+            from
+            {
+                width: 0;
+            }
+
+        }
+
+        @media (max-width: 768px) {
+            .text
+            {
+                font-size: 20px;
+                letter-spacing: 4px;
+            }
+            .text1
+            {
+                font-size: 20px;
+                letter-spacing: 4px;
+            }            
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas1"></canvas>
+
+    <div class="container1">
+        <div class="container">
+            <p class="text">Thanks for all of your wishes.</p>
+        </div>
+ 
+    </div>
+    <div class="container2">
+        <div class="container">
+            <p class="text1">Especially your wish.</p>
+        </div>
+    </div>
+    
+    <script>
+        window.addEventListener('load', (event) => {
+            const canvas = document.getElementById('canvas1');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            class Symbol {
+                constructor(x, y, fontSize, canvasHeight) {
+                    this.characters = 'ァアィイゥウェエォオカガキギクグケゲコゴ...'; // Characters truncated for brevity
+                    this.x = x;
+                    this.y = y;
+                    this.fontSize = fontSize;
+                    this.text = '';
+                    this.canvasHeight = canvasHeight;
+                }
+
+                draw(context) {
+                    this.text = this.characters.charAt(Math.floor(Math.random() * this.characters.length));
+                    context.fillText(this.text, this.x * this.fontSize, this.y * this.fontSize);
+                    if (this.y * this.fontSize > this.canvasHeight && Math.random() > 0.98) {
+                        this.y = 0;
+                    } else {
+                        this.y += 1;
+                    }
+                }
+            }
+
+            class Effect {
+                constructor(canvasWidth, canvasHeight) {
+                    this.canvasWidth = canvasWidth;
+                    this.canvasHeight = canvasHeight;
+                    this.fontSize = 12;
+                    this.columns = this.canvasWidth / this.fontSize;
+                    this.symbols = [];
+                    this.initialize();
+                }
+
+                initialize() {
+                    for (let i = 0; i < this.columns; i++) {
+                        this.symbols[i] = new Symbol(i, 0, this.fontSize, this.canvasHeight);
+                    }
+                }
+
+                resize(width, height) {
+                    this.canvasWidth = width;
+                    this.canvasHeight = height;
+                    this.columns = this.canvasWidth / this.fontSize;
+                    this.symbols = [];
+                    this.initialize();
+                }
+            }
+
+            const effect = new Effect(canvas.width, canvas.height);
+            let lastTime = 0;
+            const fps = 30;
+            const nextframe = 1000 / fps;
+            let timer = 0;
+
+            function animate(timeStamp) {
+                const deltaTime = timeStamp - lastTime;
+                lastTime = timeStamp;
+                if (timer > nextframe) {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#0aff0a';
+                    ctx.font = effect.fontSize + 'px monospace';
+                    effect.symbols.forEach(symbol => symbol.draw(ctx));
+                    timer = 0;
+                } else {
+                    timer += deltaTime;
+                }
+                
+                requestAnimationFrame(animate);
+            }
+            animate(0);
+
+            window.addEventListener('resize', function() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                effect.resize(canvas.width, canvas.height);
+            });
+        });
+    </script>
+</body>
+</html>
